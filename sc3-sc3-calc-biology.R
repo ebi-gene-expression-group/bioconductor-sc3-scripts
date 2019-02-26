@@ -16,11 +16,11 @@ option_list = list(
     help = "File name in which a SC3 'SingleCellExperiment' object has been stored after kmeans clustering."
   ),
   make_option(
-    c("-d", "--output-dir"),
+    c("-t", "--output-text-file"),
     action = "store",
     default = NA,
     type = 'character',
-    help = "An output directory in which to write k-wise outputs."
+    help = "A text file file to write marker matrices to. A 'k' column will defined from which value of 'k' the markers are derived."
   ),
   make_option(
     c("-k", "--ks"),
@@ -45,13 +45,12 @@ option_list = list(
   )
 )
 
-opt <- wsc_parse_args(option_list, mandatory = c('input_object_file', 'output_object_file', 'output_dir'))
+opt <- wsc_parse_args(option_list, mandatory = c('input_object_file', 'output_object_file'))
 
 # Check parameter values defined
 if ( ! file.exists(opt$input_object_file)){
   stop((paste('SC3 file object', opt$input_object_file, 'does not exist.')))
 }
-
 
 # Parse the ks to a vector
 if ( is.null(opt$ks)){
@@ -70,17 +69,27 @@ SingleCellExperiment <- readRDS(opt$input_object_file)
 # Calculate consensus matrix
 SingleCellExperiment  <- sc3_calc_biology(object = SingleCellExperiment, ks = ks, regime = opt$regime)
 
-# Get results by k
-results_cols <- grep(opt$regime, colnames(rowData(SingleCellExperiment)), value = TRUE)
+if ( ! is.na(opt$output_text_file)){
 
-# Create output directory
-dir.create(opt$output_dir)
+    # Get results by k
+    results_cols <- grep(opt$regime, colnames(rowData(SingleCellExperiment)), value = TRUE)
 
-for (k in ks){
-  k_cols <- grep(paste0('_', k, '_'), results_cols, value = TRUE)
-  results <- cbind(data.frame(cell = rownames(SingleCellExperiment)), rowData(SingleCellExperiment)[, k_cols, drop = FALSE])
-  
-  write.csv(results, file = file.path(opt$output_dir, paste(opt$regime, k, 'csv', sep='.')), row.names = FALSE, na='', quote = FALSE)
+    # Make the markers matrix
+
+    markers <- do.call(rbind, lapply(ks, function(k){
+      k_cols <- grep(paste0('_', k, '_'), results_cols, value = TRUE)
+      mark <- cbind(k = k, data.frame(gene = rownames(SingleCellExperiment)), rowData(SingleCellExperiment)[, k_cols, drop = FALSE])
+      colnames(mark)[c(3,4,5)] <- c('cluster', 'padj', 'auroc')
+      mark
+    }))
+
+    # Some rows have NAs in cluster etc. Not sure why, let's just take them out
+
+    markers <- markers[! is.na(markers$cluster), ]
+
+    # Output text file
+
+    write.table(markers, file = opt$output_text_file, sep = "\t", row.names = FALSE, quote = FALSE, na='')
 }
 
 # Print introspective information

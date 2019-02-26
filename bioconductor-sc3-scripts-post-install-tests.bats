@@ -239,16 +239,16 @@
 # Calculate cluster markers
 
 @test "Calculate cluster markers" {
-    if [ "$use_existing_outputs" = 'true' ] && [ -f "$sc3_biology_object" ]; then
+    if [ "$use_existing_outputs" = 'true' ] && [ -f "$sc3_biology_object" ] && [ -f "$sc3_markers_text" ]; then
         skip "$use_existing_outputs $sc3_biology_object exists and use_existing_outputs is set to 'true'"
     fi
    
-    run rm -f $sc3_biology_object && sc3-sc3-calc-biology.R -i $sc3_consensus_object -d $sc3_markers_dir -k $sc3_ks -r $sc3_biology_regime -o $sc3_biology_object
+    run rm -f $sc3_biology_object && rm -rf $sc3_markers_text && sc3-sc3-calc-biology.R -i $sc3_consensus_object -t $sc3_markers_text -k $sc3_ks -r $sc3_biology_regime -o $sc3_biology_object
     
     echo "status = ${status}"
     echo "output = ${output}"
     [ "$status" -eq 0 ]
-    [ -f  "$sc3_biology_object" ]
+    [ -f  "$sc3_biology_object" ] && [ -f "$sc3_markers_text" ]
 }
 
 # Do PCA
