@@ -280,3 +280,35 @@
     [ "$status" -eq 0 ]
     [ -f  "$pca_plot_file" ]
 }
+
+# Run whole SC3
+
+@test "Run whole SC3 workflow" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -f "$sc3_complete_singlecellexperiment_object" ]; then
+        skip "$use_existing_outputs $sc3_complete_singlecellexperiment_object exists and use_existing_outputs is set to 'true'"
+    fi
+
+    run rm -f $sc3_complete_singlecellexperiment_object && sc3-sc3.R -i $norm_singlecellexperiment_object -f $gene_filter -p $pct_dropout_min -q $pct_dropout_max -d $d_region_min -e $d_region_max -n $svm_num_cells -m $svm_max -t $n_cores -s $rand_seed -k $kmeans_nstart -a $kmeans_iter_max -o $sc3_complete_singlecellexperiment_object
+
+    echo "status = ${status}"
+    echo "output = ${output}"
+    
+    [ "$status" -eq 0 ]
+    [ -f  "$sc3_complete_singlecellexperiment_object" ]
+}
+
+# Run real data validation
+
+@test "Validate SC3 with standard data" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -f "$sc3_validation_done" ]; then
+        skip "$use_existing_outputs $sc3_validation_done exists and use_existing_outputs is set to 'true'"
+    fi
+
+    run rm -f $sc3_validation_done && sc3-sc3-validate.R && touch $sc3_validation_done
+
+    echo "status = ${status}"
+    echo "output = ${output}"
+    
+    [ "$status" -eq 0 ]
+    [ -f  "$sc3_validation_done" ]
+}

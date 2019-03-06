@@ -163,9 +163,6 @@ SingleCellExperiment <- readRDS(opt$input_object_file)
 # SC3 needs this
 rowData(SingleCellExperiment)$feature_symbol <- rownames(SingleCellExperiment)
 
-# Temporary fix to deal with https://github.com/hemberg-lab/SC3/issues/53
-assignInNamespace(x = "rowSums", value = Matrix::rowSums, ns = "base")
-
 # Determine value of ks to pass to sc3_kmeans()
 if (! is.null(opt$ks)){
   ## If the user has specified ks, parse the ks to a vector and use as ks value
@@ -175,6 +172,17 @@ if (! is.null(opt$ks)){
   SingleCellExperiment <- sc3_estimate_k(SingleCellExperiment)
   ks <- metadata(SingleCellExperiment)$sc3$k_estimation
 }
+
+# Seems to be necessary to convert sparse matrices to dense for this- see https://github.com/hemberg-lab/SC3/issues/53
+
+assays(SingleCellExperiment) <- lapply(assays(SingleCellExperiment), function(x){
+  if (! is.matrix(x)){
+    as.matrix(x)
+  }else{
+    x
+  }
+})
+
 # Create SCE object from data and run SC3
 SingleCellExperiment <- sc3(SingleCellExperiment, ks = ks, gene_filter = opt$gene_filter,
                             pct_dropout_min = opt$pct_dropout_min, pct_dropout_max = opt$pct_dropout_max,

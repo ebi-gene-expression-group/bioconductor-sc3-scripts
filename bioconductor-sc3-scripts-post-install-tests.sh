@@ -83,6 +83,7 @@ export outliers_file="$output_dir/outliers.txt"
 # SC3 outputs
 
 export sc3_prepared_singlecellexperiment_object="$output_dir/sc3_prep_sce.rds"
+export sc3_complete_singlecellexperiment_object="$output_dir/sc3_complete_sce.rds"
 export k_singlecellexperiment_object="$output_dir/k_sce.rds"
 export k_text_file="$output_dir/k.txt"
 export sc3_dists_singlecellexperiment_object="$output_dir/sc3_dists_sce.rds"
@@ -92,6 +93,7 @@ export sc3_consensus_object="$output_dir/sc3_consensus_sce.rds"
 export sc3_biology_object="$output_dir/sc3_bio_sce.rds"
 export sc3_clusters_file="$output_dir/clusters.txt"
 export sc3_markers_text="$output_dir/markers.txt"
+export sc3_validation_done="$output_dir/validation_done.txt"
 
 ## Test parameters- would form config file in real workflow. DO NOT use these
 ## as default values without being sure what they mean.
