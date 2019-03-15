@@ -21,7 +21,7 @@ before_install:
       conda config --add channels conda-forge;
       conda config --add channels bioconda;
 
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-optparse libpng r-cairo r-workflowscriptscommon dropletutils-scripts>=0.0.1 bioconductor-scater=1.8.4 bioconductor-singlecellexperiment-scripts bioconductor-scater-scripts>=0.0.4 bioconductor-sc3=1.8.0;
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-optparse libpng r-cairo r-workflowscriptscommon dropletutils-scripts>=0.0.1 bioconductor-scater>=1.10.0 bioconductor-singlecellexperiment-scripts scater-scripts>=0.0.5 bioconductor-sc3>=1.8.0;
     fi
 
 install:

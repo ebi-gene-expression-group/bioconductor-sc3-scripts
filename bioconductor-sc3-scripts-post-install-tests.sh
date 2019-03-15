@@ -101,6 +101,8 @@ export sc3_validation_done="$output_dir/validation_done.txt"
 ### Workflow parameters
 
 export col_names=TRUE
+export cell_metrics=total_counts,total_features_by_counts
+export gene_metrics=n_cells_by_counts
 export min_cell_total_counts=500
 export min_cell_total_features=50
 export min_feature_n_cells_counts=10
